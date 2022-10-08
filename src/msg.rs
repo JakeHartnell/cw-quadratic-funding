@@ -1,25 +1,23 @@
 use crate::error::ContractError;
 use crate::matching::QuadraticFundingAlgorithm;
 use crate::state::Proposal;
-use cosmwasm_std::{Binary, Env, HumanAddr};
-use cw0::Expiration;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::{Binary, Env};
+use cw_utils::Expiration;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-#[serde(rename_all = "snake_case")]
-pub struct InitMsg {
-    pub admin: HumanAddr,
-    pub leftover_addr: HumanAddr,
-    pub create_proposal_whitelist: Option<Vec<HumanAddr>>,
-    pub vote_proposal_whitelist: Option<Vec<HumanAddr>>,
+#[cw_serde]
+pub struct InstantiateMsg {
+    pub admin: String,
+    pub leftover_addr: String,
+    pub create_proposal_whitelist: Option<Vec<String>>,
+    pub vote_proposal_whitelist: Option<Vec<String>>,
     pub voting_period: Expiration,
     pub proposal_period: Expiration,
     pub budget_denom: String,
     pub algorithm: QuadraticFundingAlgorithm,
 }
 
-impl InitMsg {
+impl InstantiateMsg {
     pub fn validate(&self, env: Env) -> Result<(), ContractError> {
         // check if proposal period is expired
         if self.proposal_period.is_expired(&env.block) {
@@ -34,14 +32,13 @@ impl InitMsg {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-#[serde(rename_all = "snake_case")]
-pub enum HandleMsg {
+#[cw_serde]
+pub enum ExecuteMsg {
     CreateProposal {
         title: String,
         description: String,
         metadata: Option<Binary>,
-        fund_address: HumanAddr,
+        fund_address: String,
     },
     VoteProposal {
         proposal_id: u64,
@@ -49,14 +46,13 @@ pub enum HandleMsg {
     TriggerDistribution {},
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-#[serde(rename_all = "snake_case")]
+#[cw_serde]
 pub enum QueryMsg {
     ProposalByID { id: u64 },
     AllProposals {},
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+#[cw_serde]
 pub struct AllProposalsResponse {
     pub proposals: Vec<Proposal>,
 }
@@ -71,9 +67,9 @@ mod tests {
         let mut env = mock_env();
 
         env.block.height = 30;
-        let msg = InitMsg {
-            admin: Default::default(),
-            leftover_addr: Default::default(),
+        let msg = InstantiateMsg {
+            admin: "admin".to_string(),
+            leftover_addr: "leftover".to_string(),
             create_proposal_whitelist: None,
             vote_proposal_whitelist: None,
             voting_period: Default::default(),

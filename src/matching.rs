@@ -1,25 +1,23 @@
 use crate::error::ContractError;
-use cosmwasm_std::CanonicalAddr;
+use cosmwasm_schema::cw_serde;
+use cosmwasm_std::Addr;
 use integer_sqrt::IntegerSquareRoot;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-#[serde(rename_all = "snake_case")]
+#[cw_serde]
 pub enum QuadraticFundingAlgorithm {
     CapitalConstrainedLiberalRadicalism { parameter: String },
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[cw_serde]
 pub struct RawGrant {
-    pub addr: CanonicalAddr,
+    pub addr: Addr,
     pub funds: Vec<u128>,
     pub collected_vote_funds: u128,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[cw_serde]
 pub struct CalculatedGrant {
-    pub addr: CanonicalAddr,
+    pub addr: Addr,
     pub grant: u128,
     pub collected_vote_funds: u128,
 }
@@ -82,25 +80,41 @@ fn constrain_by_budget(grants: Vec<CalculatedGrant>, budget: u128) -> Vec<Calcul
 mod tests {
     use crate::matching::{calculate_clr, CalculatedGrant, RawGrant};
     use crate::state::Proposal;
-    use cosmwasm_std::CanonicalAddr;
+    use cosmwasm_std::{Addr, Uint128};
 
     #[test]
     fn test_clr_1() {
         let proposal1 = Proposal {
-            fund_address: CanonicalAddr(b"proposal1".to_vec().into()),
-            ..Default::default()
+            id: 1,
+            title: "proposal1".to_string(),
+            description: "proposal1".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal1"),
+            collected_funds: Uint128::zero(),
         };
         let proposal2 = Proposal {
-            fund_address: CanonicalAddr(b"proposal2".to_vec().into()),
-            ..Default::default()
+            id: 2,
+            title: "proposal2".to_string(),
+            description: "proposal2".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal2"),
+            collected_funds: Uint128::zero(),
         };
         let proposal3 = Proposal {
-            fund_address: CanonicalAddr(b"proposal3".to_vec().into()),
-            ..Default::default()
+            id: 3,
+            title: "proposal3".to_string(),
+            description: "proposal3".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal3"),
+            collected_funds: Uint128::zero(),
         };
         let proposal4 = Proposal {
-            fund_address: CanonicalAddr(b"proposal4".to_vec().into()),
-            ..Default::default()
+            id: 4,
+            title: "proposal4".to_string(),
+            description: "proposal4".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal4"),
+            collected_funds: Uint128::zero(),
         };
         let votes1 = vec![7200u128];
         let votes2 = vec![12345u128];
@@ -170,20 +184,36 @@ mod tests {
     #[test]
     fn test_clr_2() {
         let proposal1 = Proposal {
-            fund_address: CanonicalAddr(b"proposal1".to_vec().into()),
-            ..Default::default()
+            id: 1,
+            title: "proposal1".to_string(),
+            description: "proposal1".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal1"),
+            collected_funds: Uint128::zero(),
         };
         let proposal2 = Proposal {
-            fund_address: CanonicalAddr(b"proposal2".to_vec().into()),
-            ..Default::default()
+            id: 2,
+            title: "proposal2".to_string(),
+            description: "proposal2".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal2"),
+            collected_funds: Uint128::zero(),
         };
         let proposal3 = Proposal {
-            fund_address: CanonicalAddr(b"proposal3".to_vec().into()),
-            ..Default::default()
+            id: 3,
+            title: "proposal3".to_string(),
+            description: "proposal3".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal3"),
+            collected_funds: Uint128::zero(),
         };
         let proposal4 = Proposal {
-            fund_address: CanonicalAddr(b"proposal4".to_vec().into()),
-            ..Default::default()
+            id: 4,
+            title: "proposal4".to_string(),
+            description: "proposal4".to_string(),
+            metadata: None,
+            fund_address: Addr::unchecked("proposal4"),
+            collected_funds: Uint128::zero(),
         };
         let votes1 = vec![1200u128, 44999u128, 33u128];
         let votes2 = vec![30000u128, 58999u128];
